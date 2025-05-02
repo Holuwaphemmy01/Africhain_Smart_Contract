@@ -38,7 +38,6 @@ module africhain_contract::africhain_contract{
         };
         transfer::transfer(admin_cap, publisher);
 
-        // Create and share ContractData to store publisher address
         let contract_data = ContractData {
             id: object::new(ctx),
             publisher,
@@ -46,6 +45,27 @@ module africhain_contract::africhain_contract{
         transfer::share_object(contract_data);
     }
 
+
+    public entry fun create_profile(
+        contract_data: &ContractData,
+        name: vector<u8>,
+        age: u8,
+        gender: u8,
+        ctx: &mut TxContext
+    ) {
+
+        let sender = tx_context::sender(ctx);
+        let profile = UserProfile {
+            id: object::new(ctx),
+            wallet: sender,
+        };
+
+        df::add(&mut profile.id, string::utf8(b"name"), string::utf8(name));
+        df::add(&mut profile.id, string::utf8(b"age"), age);
+        df::add(&mut profile.id, string::utf8(b"gender"), gender);
+
+        transfer::transfer(profile, sender);
+    }
 
     // fun init(ctx: &mut tx_context::TxContext) {
     //     let admin_cap = AdminCap {
